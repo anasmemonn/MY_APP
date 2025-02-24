@@ -362,32 +362,33 @@
             </div>
         </div>
 
-       <!-- Links Grid -->
+        <!-- Links Grid -->
         <div class="link-grid">
-    <a href="#" onclick="openPage('file:///android_asset/nn.html')" class="nav-card scroll-animate">
-        <div class="nav-icon"><i class="fas fa-cookie"></i></div>
-        <div>
-            <h3>DAILY TIME TABLE</h3>
-            <p>TIME IS MOST POWERFUL</p>
-        </div>
-      </a>
-
-     <a href="#" onclick="openPage('file:///android_asset/ui.html')" class="nav-card scroll-animate">
-        <div class="nav-icon"><i class="fas fa-book-open"></i></div>
-        <div>
-            <h3>ACADMIC UI HUB</h3>
-            <p>DEADLINE TRACKER</p>
-        </div>
-    </a>
-
-    <a href="#" onclick="openPage('file:///android_asset/xx.html')" class="nav-card scroll-animate">
-        <div class="nav-icon"><i class="fas fa-book-open"></i></div>
-        <div>
-            <h3>PLANNER</h3>
-            <p>Working.....</p>
-        </div>
-    </a>
-</div>
+            <a href="nn.html" class="nav-card scroll-animate">
+                <div class="nav-icon"><i class="fas fa-cookie"></i></div>
+                <div>
+                    <h3>DAILY TIME TABLE</h3>
+                    <p>TIME IS MOST POWERFUL</p>
+                </div>
+            </a>
+            
+             
+            <a href="ui.html" class="nav-card scroll-animate">
+                <div class="nav-icon"><i class="fas fa-book-open"></i></div>
+                <div>
+                    <h3>ACADMIC UI HUB</h3>
+                    <p>DEADLINE TRACKER</p>
+                </div>
+            </a>
+            <a href="xx.html" class="nav-card scroll-animate">
+                <div class="nav-icon"><i class="fas fa-book-open"></i></div>
+                <div>
+                    <h3>PLANNER</h3>
+                    <p>Working.....</p>
+                </div>
+            </a>
+    
+          
 
             <a href="https://www.instagram.com/noturtype_anass/" class="nav-card scroll-animate">
                 <div class="nav-icon"><i class="fab fa-instagram"></i></div>
@@ -421,9 +422,7 @@
                 }
             });
         }, { threshold: 0.1 });
-             function openPage(page) {
-        window.location.href = page;
-    }
+
         document.querySelectorAll('.scroll-animate').forEach((el) => {
             observer.observe(el);
         });
