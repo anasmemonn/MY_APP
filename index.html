@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anas Memon | AI Developer Portfolio</title>
         <link rel="icon" href="imagess.jpg" type="image/jpg">
@@ -422,7 +424,15 @@
                 }
             });
         }, { threshold: 0.1 });
-
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log("Service Worker Registered!", registration);
+            })
+            .catch((error) => {
+                console.log("Service Worker Registration Failed!", error);
+            });
+        }
         document.querySelectorAll('.scroll-animate').forEach((el) => {
             observer.observe(el);
         });
