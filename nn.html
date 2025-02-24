@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="isagi.jpg" type="image/jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study War Room 2.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    /* Use CSS Variables for theming */
+    :root {
+      --primary: #00ff88;
+      --secondary: #2196f3;
+      --accent: #f59e0b;
+      --bg: linear-gradient(135deg, #0a192f, #172a45);
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --glow: rgba(248, 250, 252, 0.1);
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --glow: rgba(15, 23, 42, 0.1);
+    }
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      transition: background 0.3s, color 0.3s;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    /* Top Icons Container for Theme Toggle and Reset */
+    .top-icons {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 1rem;
+      z-index: 1100;
+    }
+    .theme-toggle,
+    .reset-toggle {
+      background: var(--surface);
+      padding: 0.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .theme-toggle:hover,
+    .reset-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .theme-icon {
+      font-size: 1.5rem;
+      color: var(--text);
+    }
+    /* Style for reset image icon */
+    .settings-icon {
+      width: 34px;
+      height: 24px;
+      object-fit: contain;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    .deadline-reminder {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 5rem;
+      margin: 3rem 0;
+      text-align: center;
+      font-weight: bold;
+      color: var(--accent);
+      box-shadow: 0 10px 50px rgba(255, 9, 9, 0.632);
+    }
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px var(--glow);
+    }
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      margin: 2rem 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.5s ease;
+    }
+    /* Routine Task Checklist */
+    .routine {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .task {
+      background: var(--surface);
+      padding: 1.75rem;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+    .task:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    /* Hide native checkbox */
+    .task input[type="checkbox"] {
+      display: none;
+    }
+    /* Custom Checkbox Styling */
+    .custom-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--primary);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .task:hover .custom-checkbox {
+      transform: scale(1.1);
+    }
+    /* Styling when checkbox is checked */
+    .task:has(input[type="checkbox"]:checked) {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: var(--secondary);
+    }
+    .task:has(input[type="checkbox"]:checked) span {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    .task:has(input[type="checkbox"]:checked) .custom-checkbox {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    .custom-checkbox::after {
+      content: "";
+      font-size: 1rem;
+      color: white;
+      display: none;
+    }
+    .task:has(input[type="checkbox"]:checked) .custom-checkbox::after {
+      content: '✓';
+      display: block;
+    }
+    /* Text Styling */
+    .task span {
+      font-size: 1.125rem;
+      flex: 1;
+    }
+    .time-badge {
+      font-weight: 600;
+      margin-right: 0.5rem;
+      color: var(--secondary);
+    }
+    /* Win Reward Modal */
+    .win-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .win-content {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    .win-content h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    .win-content p {
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+    }
+    .win-content button {
+      background: var(--primary);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .win-content button:hover {
+      background: var(--secondary);
+    }
+    /* Pomodoro Container (Optional) */
+    .pomodoro-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .timer-display {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 1rem 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .timer-segment {
+      background: var(--bg);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .quote-section {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin: 2rem 0;
+      text-align: center;
+      font-style: italic;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .quote-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .pomodoro-container {
+        position: static;
+        margin: 2rem 0;
+      }
+    }
+    /* Second :root block to override colors if intended */
+    :root {
+      --primary: #ff0000;
+      --secondary: #ff6b6b;
+      --accent: #ff0000;
+      --bg: #0a0a0a;
+      --surface: #1a1a1a;
+      --text: #ffffff;
+      --glow: rgba(255, 0, 0, 0.3);
+    }
+    /* Particle Animation */
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100vh); }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles"></div>
+  <div class="container">
+    <!-- Top Icons for Reset & Theme Toggle -->
+    <div class="top-icons">
+      <div class="reset-toggle" onclick="resetProgress()">
+        <img src="reset.png" alt="Reset Progress" class="settings-icon">
+      </div>
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-icon">🌓</span>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>📚 Study Analysis Hub ⚡</h1>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+    </div>
+
+    <div class="deadline-reminder">
+      ⏳ Deadline: <span id="countdown"></span> - Stay Focused!
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="completed-tasks">0</div>
+        <div>Tasks Completed</div>
+      </div>
+    </div>
+
+    <div class="quote-section" id="quote">
+      "The secret of getting ahead is getting started." - Mark Twain
+    </div>
+    
+    <!-- Routine Task Checklist -->
+    <div class="routine">
+      <!-- 1. Wake Up -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">7:00 AM</span>Wake Up</span>
+      </label>
+      <!-- 2. Fajr Namaz -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">7:15-7:45 AM</span>Fajr Namaz</span>
+      </label>
+      <!-- 3. Breakfast + Freshen Up -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">7:45-8:00 AM</span>Breakfast & Freshen Up</span>
+      </label>
+      <!-- 4. Session 1 (Maths) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">8:00-8:30 AM</span>Session 1 (Maths)</span>
+      </label>
+      <!-- 5. Session 2 (Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">8:30-9:00 AM</span>Session 2 (Science)</span>
+      </label>
+      <!-- 6. Session 3 (Sanskrit) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">9:00-9:30 AM</span>Session 3 (Sanskrit)</span>
+      </label>
+      <!-- 7. Session 4 (Social Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">9:30-10:00 AM</span>Session 4 (Social Science)</span>
+      </label>
+      <!-- 8. Relaxation/Break -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">10:00-10:30 AM</span>Relaxation/Break</span>
+      </label>
+      <!-- 9. Session 5 (English) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">10:30-11:00 AM</span>Session 5 (English)</span>
+      </label>
+      <!-- 10. Session 6 (Maths) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">11:00-11:30 AM</span>Session 6 (Maths)</span>
+      </label>
+      <!-- 11. Lunch + Break -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">12:00-1:00 PM</span>Lunch + Break</span>
+      </label>
+      <!-- 12. Dhuhr Namaz -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">1:30-1:50 PM</span>Dhuhr Namaz</span>
+      </label>
+      <!-- 13. Session 7 (Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">1:50-2:20 PM</span>Session 7 (Science)</span>
+      </label>
+      <!-- 14. Session 8 (Sanskrit) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">2:20-2:50 PM</span>Session 8 (Sanskrit)</span>
+      </label>
+      <!-- 15. Session 9 (Social Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">2:50-3:20 PM</span>Session 9 (Social Science)</span>
+      </label>
+      <!-- 16. Session 10 (English) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">3:20-3:50 PM</span>Session 10 (English)</span>
+      </label>
+      <!-- 17. Relaxation/Break -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">3:50-4:20 PM</span>Relaxation/Break</span>
+      </label>
+      <!-- 18. Session 11 (Maths) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">4:20-4:50 PM</span>Session 11 (Maths)</span>
+      </label>
+      <!-- 19. Break + Physical Activity -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">4:50-5:20 PM</span>Break + Physical Activity</span>
+      </label>
+      <!-- 20. Asar Namaz -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">5:20-5:50 PM</span>Asar Namaz</span>
+      </label>
+      <!-- 21. Session 12 (Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">5:50-6:20 PM</span>Session 12 (Science)</span>
+      </label>
+      <!-- 22. Session 13 (Sanskrit) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">6:20-6:50 PM</span>Session 13 (Sanskrit)</span>
+      </label>
+      <!-- 23. Relaxation/Break -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">6:50-7:30 PM</span>Relaxation/Break</span>
+      </label>
+      <!-- 24. Maghrib Namaz -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">6:35-6:50 PM</span>Maghrib Namaz</span>
+      </label>
+      <!-- 25. Dinner -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">6:50-7:20 PM</span>Dinner</span>
+      </label>
+      <!-- 26. Session 14 (Maths) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">7:30-8:00 PM</span>Session 14 (Maths)</span>
+      </label>
+      <!-- 27. Session 15 (Science) -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">8:00-8:30 PM</span>Session 15 (Science)</span>
+      </label>
+      <!-- 28. Relaxation/Break -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">8:30-9:00 PM</span>Relaxation/Break</span>
+      </label>
+      <!-- 29. Isha Namaz -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">8:20-8:40 PM</span>Isha Namaz</span>
+      </label>
+      <!-- 30. Relax or Hobby Time -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">9:00-9:30 PM</span>Relax or Hobby Time</span>
+      </label>
+      <!-- 31. Light Revision/Relaxed Study -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">9:30-10:00 PM</span>Light Revision/Relaxed Study</span>
+      </label>
+      <!-- 32. Sleep -->
+      <label class="task">
+        <input type="checkbox" class="progress">
+        <div class="custom-checkbox"></div>
+        <span><span class="time-badge">10:00 PM</span>Sleep</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Win Reward Modal -->
+  <div id="winModal" class="win-modal">
+    <div class="win-content">
+      <h2>Congratulations!</h2>
+      <p>You have completed all your tasks for today!</p>
+      <button onclick="closeWinModal()">Awesome!</button>
+    </div>
+  </div>
+
+  <script>
+    // Theme Management
+    function toggleTheme() {
+      document.body.dataset.theme = 
+        document.body.dataset.theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', document.body.dataset.theme);
+    }
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.body.dataset.theme = savedTheme;
+    
+    // Reset Progress with confirmation
+    function resetProgress() {
+      if (confirm("Are you sure you want to reset progress?")) {
+        const checkboxes = document.querySelectorAll('.progress');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        localStorage.setItem('completedTasks', JSON.stringify([]));
+        updateProgress();
+      }
+    }
+    
+    // Progress Tracking
+    let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.progress');
+      completedTasks = [...checkboxes].map(checkbox => checkbox.checked);
+      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+      
+      const checkedCount = completedTasks.filter(Boolean).length;
+      document.getElementById('completed-tasks').textContent = checkedCount;
+      document.getElementById('progress').style.width = 
+        `${(checkedCount / checkboxes.length) * 100}%`;
+      
+      // Toggle task style if completed
+      checkboxes.forEach(checkbox => {
+        checkbox.closest('.task').classList.toggle('completed', checkbox.checked);
+      });
+      
+      // If all tasks are complete, show win modal and confetti if available
+      if (checkedCount === checkboxes.length) {
+        if(window.confetti) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+        // Show win reward modal after a short delay for a surprise effect
+        setTimeout(() => {
+          document.getElementById('winModal').style.display = "flex";
+        }, 500);
+      }
+    }
+    
+    // Initialize checkbox states and event listeners
+    document.querySelectorAll('.progress').forEach((checkbox, index) => {
+      checkbox.checked = completedTasks[index] || false;
+      checkbox.addEventListener('change', updateProgress);
+    });
+    updateProgress();
+    
+    // Function to close the win reward modal
+    function closeWinModal() {
+      document.getElementById('winModal').style.display = "none";
+    }
+    
+    // Countdown Timer for Deadline
+    const deadline = new Date('February 26, 2025 23:59:59').getTime();
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const timeLeft = deadline - now;
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      document.getElementById('countdown').innerHTML = 
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        document.getElementById('countdown').innerHTML = "Deadline Passed";
+      }
+    }
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+    
+    // Motivational Quotes
+    const quotes = [
+      "Success is the sum of small efforts, repeated day in and day out. - Robert Collier",
+      "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+      "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+      "The only way to do great work is to love what you do. - Steve Jobs"
+    ];
+    function updateQuote() {
+      document.getElementById('quote').textContent = 
+        quotes[Math.floor(Math.random() * quotes.length)];
+    }
+    // Update the quote every 10 seconds
+    setInterval(updateQuote, 10000);
+    updateQuote();
+    
+    // Particle Background Animation
+    const particlesContainer = document.querySelector('.particles');
+    const particleCount = 100;
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+      particle.style.animationDuration = `${Math.random() * 5 + 3}s`;
+      particle.style.animationDelay = `${Math.random() * 2}s`;
+      particlesContainer.appendChild(particle);
+    }
+  </script>
+</body>
+</html>
